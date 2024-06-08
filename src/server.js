@@ -19,7 +19,23 @@ const app = express();
 app.use(express.json());
 
 // Define frontend URL
-app.use(cors())
+// Define the allowed origins
+const allowedOrigins = ['https://main--poomas-latest.netlify.app','https://poomasbuyandsell.com', 'http://localhost:5173'];
+
+// Use CORS with options
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      // If a specific origin isn't found in the allowed list, reject the request
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
 
 // Serve static files from frontend directory
 app.use(express.static(path.join(__dirname, 'frontend' ,'index.html')));
