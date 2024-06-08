@@ -25,5 +25,5 @@ router.put('/products/:id', protect, isAdmin, ProductController.updateProduct);
 router.delete('/products/remove/:productId', protect, isAdmin, ProductController.deleteProduct);
 router.get('/products/search', ProductController.searchProducts);
 router.get('/products/filters', ProductController.getFilterOptions);
-
+router.get('/products/:id', ProductController.getProductById);
 module.exports = router;
