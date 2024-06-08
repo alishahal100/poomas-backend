@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Define routes here
 router.get('/', (req, res) => {
-  res.send('API is running');
+  res.send('API is working');
 });
 
 module.exports = router;
