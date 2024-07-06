@@ -4,7 +4,15 @@ const Product = require('../models/Product');
 
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const { category } = req.query;
+    let query = {};
+
+    // If a category is provided in the query, filter products by that category
+    if (category) {
+      query.category = category;
+    }
+
+    const products = await Product.find(query);
     res.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
