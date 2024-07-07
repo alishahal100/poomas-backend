@@ -19,7 +19,7 @@ const upload = multer({ storage: storage });
 router.get('/get-products', ProductController.getProducts);
 
 // Add a new product
-router.post('/add-products', protect, isAdmin, upload.fields([{ name: 'images', maxCount: 5 }, { name: 'videos', maxCount: 5 }]), ProductController.addProduct);
+router.post('/add-products', protect, isAdmin, upload.fields([{ name: 'images', maxCount: 20 }, { name: 'videos', maxCount: 20 }]), ProductController.addProduct);
 
 router.put('/products/:id', protect, isAdmin, ProductController.updateProduct);
 router.delete('/products/remove/:productId', protect, isAdmin, ProductController.deleteProduct);
