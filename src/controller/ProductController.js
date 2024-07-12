@@ -1,6 +1,23 @@
 const Product = require('../models/Product');
 
 
+const s3 = require('../config/s3'); // Adjust the path to your s3.js file
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.S3_BUCKET_NAME,
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString() + '_' + file.originalname);
+    },
+  }),
+});
 
 exports.getProducts = async (req, res) => {
   try {
@@ -20,7 +37,6 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-// Add a new product
 exports.addProduct = async (req, res) => {
   try {
     const {
@@ -46,21 +62,21 @@ exports.addProduct = async (req, res) => {
 
     // Check if images and videos are present in the request
     if (req.files && req.files.images) {
-      // Map the uploaded images to their original file names
-      const imageNames = req.files.images.map(image => image.originalname);
-      // Store the file names in the images field of the product
-      product.images = imageNames;
+      // Map the uploaded images to their S3 URLs
+      const imageUrls = req.files.images.map(image => image.location);
+      product.images = imageUrls;
     }
 
-    // Check if videos are present in the request
     if (req.files && req.files.videos) {
-      // Map the uploaded videos to their original file names and store them in the videos field of the product
-      product.videos = req.files.videos.map(video => video.originalname);
+      // Map the uploaded videos to their S3 URLs
+      const videoUrls = req.files.videos.map(video => video.location);
+      product.videos = videoUrls;
     }
 
     await product.save();
     res.status(201).json({
-      message: 'Product added successfully'
+      message: 'Product added successfully',
+      product
     });
   } catch (error) {
     console.error('Error adding product:', error);
@@ -69,7 +85,6 @@ exports.addProduct = async (req, res) => {
     });
   }
 };
-
 
 exports.getProductById = async (req, res) => {
   try {

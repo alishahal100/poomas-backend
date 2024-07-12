@@ -1,20 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { protect, isAdmin } = require('../middleware/authmiddleware');
-const multer = require('multer');
 const ProductController = require('../controller/ProductController');
 
-// Multer configuration for file upload
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname); // Save only the original filename
-  }
-});
-
-const upload = multer({ storage: storage });
+// Updated Multer configuration for file upload to S3
+const upload = require('../config/s3'); // Adjust the path to your s3.js file
 
 router.get('/get-products', ProductController.getProducts);
 
@@ -26,4 +16,5 @@ router.delete('/products/remove/:productId', protect, isAdmin, ProductController
 router.get('/products/search', ProductController.searchProducts);
 router.get('/products/filters', ProductController.getFilterOptions);
 router.get('/products/:id', ProductController.getProductById);
+
 module.exports = router;

@@ -17,6 +17,9 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
 
 // Define frontend URL
 // Define the allowed origins
