@@ -134,18 +134,20 @@ exports.deleteProduct = async (req, res) => {
 
 
 // Controller function for searching products
- exports.searchProducts = async (req, res) => {
+exports.searchProducts = async (req, res) => {
   try {
-    const { query } = req.query;
-    
-    // Search products based on name or description
+    console.log("Received Query Params:", req.query);
+    let { category } = req.query;  // Change 'query' to 'category'
+
+    // Ensure category is a valid string
+    if (!category || typeof category !== 'string' || category.trim() === '') {
+      return res.status(400).json({ message: 'Invalid search query' });
+    }
+
+    // Perform case-insensitive search by category
     const searchResults = await Product.find({
-      $or: [
-        { name: { $regex: query, $options: 'i' } }, // Case-insensitive search by name
-        { description: { $regex: query, $options: 'i' } }, // Case-insensitive search by description
-      ],
+      category: { $regex: category.trim(), $options: 'i' }
     });
-    console.log("searchResults: ",searchResults);
 
     res.status(200).json(searchResults);
   } catch (error) {
@@ -153,6 +155,7 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 exports.getFilterOptions = async (req, res) => {
